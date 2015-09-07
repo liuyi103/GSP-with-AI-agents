@@ -5,7 +5,7 @@ Created on Mon Sep 07 15:14:24 2015
 @author: lyc
 """
 
-k_epsilon = 1e-3
+k_epsilon = 1e-2
 class GSP_Strategy:
     '''
     The class for the strategies that are used in GSP auction.
@@ -47,6 +47,8 @@ class GSP_BestResponseStrategy(GSP_Strategy):
         rank_price = zip(range(len(prices)), prices)
         choice = max(rank_price,\
             key = lambda x: self.value_profile[x[0]] - x[1])
+        if self.value_profile[choice[0]] - choice[1] < 0:
+            return 0
         return choice[1] + k_epsilon
         
         

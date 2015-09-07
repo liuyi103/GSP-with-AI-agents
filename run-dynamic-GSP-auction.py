@@ -11,6 +11,15 @@ from strategy import *
 import matplotlib.pyplot as plt
 import numpy as np
 
+def plot_trend(n_iterations, bids, strategy = 'BestResponse'):
+    plt.plot(range(n_iterations), np.array(bids).T, label = ['1', '2', '3'])
+    plt.xlabel('iteration')
+    plt.ylabel('bid')
+    plt.title(strategy)
+    plt.legend()
+    plt.savefig(strategy+'.pdf', dpi = 1200)
+    plt.show()
+
 if __name__ == '__main__':
     '''
     This is a small test case with 3 candidates.
@@ -26,7 +35,8 @@ if __name__ == '__main__':
     
     bids = [[],[],[]]
     
-    for iteration in range(100):
+    n_iterations = 500
+    for iteration in range(n_iterations):
         extended_winners = GSPAuction(candidates, n_winners).GetWinners(True)
         for candidate in candidates:
             candidate.strategy =\
@@ -37,8 +47,6 @@ if __name__ == '__main__':
         for k, candidate in enumerate(candidates):
             bids[k].append(candidate['bid'])
             
-    plt.plot(range(100), np.array(bids).T, label = ['1', '2', '3'])
-    plt.legend()
-    plt.show()
+    plot_trend(n_iterations, bids)
     
         
