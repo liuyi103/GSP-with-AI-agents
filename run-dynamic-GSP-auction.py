@@ -30,8 +30,6 @@ if __name__ == '__main__':
     candidates = [candidate1, candidate2, candidate3]
     
     n_winners = 2
-    for winner in winners:
-        print winner['id']
     
     bids = [[],[],[]]
     
@@ -40,13 +38,12 @@ if __name__ == '__main__':
         extended_winners = GSPAuction(candidates, n_winners).GetWinners(True)
         for candidate in candidates:
             candidate.strategy =\
-                GSP_BestResponseStrategy(candidate['value_profile'],\
-                candidate, extended_winners)
+                GSP_SmallStepStrategy(candidate, extended_winners)
             candidate.GetNewBid()
         
         for k, candidate in enumerate(candidates):
             bids[k].append(candidate['bid'])
             
-    plot_trend(n_iterations, bids)
+    plot_trend(n_iterations, bids, 'SmallStep')
     
         
