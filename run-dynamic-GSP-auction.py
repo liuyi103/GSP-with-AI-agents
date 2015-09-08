@@ -12,7 +12,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 def plot_trend(n_iterations, bids, strategy = 'BestResponse'):
-    plt.plot(range(n_iterations), np.array(bids).T, label = ['1', '2', '3'])
+    plt.plot(range(n_iterations), bids[0], label = '1')
+    plt.plot(range(n_iterations), bids[1], label = '2')
+    plt.plot(range(n_iterations), bids[2], label = '3')
     plt.xlabel('iteration')
     plt.ylabel('bid')
     plt.title(strategy)
@@ -46,4 +48,17 @@ if __name__ == '__main__':
             
     plot_trend(n_iterations, bids, 'SmallStep')
     
+    bids = [[],[],[]]
+    
+    for iteration in range(n_iterations):
+        extended_winners = GSPAuction(candidates, n_winners).GetWinners(True)
+        for candidate in candidates:
+            candidate.strategy =\
+                GSP_BestResponseStrategy(candidate, extended_winners)
+            candidate.GetNewBid()
+        
+        for k, candidate in enumerate(candidates):
+            bids[k].append(candidate['bid'])
+            
+    plot_trend(n_iterations, bids)
         
