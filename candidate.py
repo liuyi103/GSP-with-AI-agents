@@ -28,9 +28,11 @@ class GSPCandidate(AuctionCandidate):
         self.quality_score = quality_score
         self.value_profile = value_profile
         self.strategy = GSP_TruthfulStrategy(value_profile)
+        self.bid_history = []
     
     def GetNewBid(self):
         self.bid = self.strategy.GetBid()
+        self.bid_history.append(self.bid)
 
     def __getitem__(self, key):
         exec 'value = self.' + key
