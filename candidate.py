@@ -23,11 +23,11 @@ class GSPCandidate(AuctionCandidate):
     Specially, the strategy needs to be set after init function.
     '''
     def __init__(self, bid = random.random(), quality_score = 1,\
-        value_profile = []):
+        value = 0):
         AuctionCandidate.__init__(self, bid)
         self.quality_score = quality_score
-        self.value_profile = value_profile
-        self.strategy = GSP_TruthfulStrategy(value_profile)
+        self.value = value
+        self.strategy = GSP_TruthfulStrategy(self)
         self.bid_history = []
     
     def GetNewBid(self):

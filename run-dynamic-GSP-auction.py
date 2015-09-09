@@ -26,21 +26,23 @@ if __name__ == '__main__':
     '''
     This is a small test case with 3 candidates.
     '''
-    candidate1 = GSPCandidate(value_profile = [10, 2], bid = 2)
-    candidate2 = GSPCandidate(value_profile = [9, 4], bid = 4)
-    candidate3 = GSPCandidate(value_profile = [8, 3], bid = 3)
+    candidate1 = GSPCandidate(value = 10, bid = 5)
+    candidate2 = GSPCandidate(value = 9, bid = 4)
+    candidate3 = GSPCandidate(value = 8, bid = 3)
     candidates = [candidate1, candidate2, candidate3]
     
     n_winners = 2
+    
+    ctrs = [0.1, 0.05]
     
     bids = [[],[],[]]
     
     n_iterations = 500
     for iteration in range(n_iterations):
-        extended_winners = GSPAuction(candidates, n_winners).GetWinners(True)
+        GSPAuction(candidates, n_winners).GetWinners()
         for candidate in candidates:
             candidate.strategy =\
-                GSP_SmallStepStrategy(candidate, extended_winners)
+                GSP_SmallStepStrategy(candidate, candidates, ctrs)
             candidate.GetNewBid()
         
         for k, candidate in enumerate(candidates):
@@ -51,10 +53,10 @@ if __name__ == '__main__':
     bids = [[],[],[]]
     
     for iteration in range(n_iterations):
-        extended_winners = GSPAuction(candidates, n_winners).GetWinners(True)
+        GSPAuction(candidates, n_winners).GetWinners()
         for candidate in candidates:
             candidate.strategy =\
-                GSP_BestResponseStrategy(candidate, extended_winners)
+                GSP_BestResponseStrategy(candidate, candidates, ctrs)
             candidate.GetNewBid()
         
         for k, candidate in enumerate(candidates):
