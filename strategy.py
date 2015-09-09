@@ -98,40 +98,41 @@ class GSP_FictitiousPlayStrategy(GSP_Strategy):
     others' bidding history, and select a best solution for the selected 
     bid profiles.
     '''
-    def __init__(self, value, me, candidates, ctrs):
-        GSP_Strategy.__init__(self, value, me, ctrs = ctrs)
-        self.candidates = candidates
-    
     def __init__(self, me, candidates, ctrs):
-        GSP_Strategy.__init__(self, me.value, me, ctrs = ctrs)
-        self.candidates = candidates
+        GSP_Strategy.__init__(self, me, candidates, ctrs)
         
     def GetBid(self):
-        n_winners = len(ctrs)
         # Get the samples.
-        if len(self.candidates[0].bid_history) == 0:
-            return np.random.choice(self.value_profile)
+        if len(self.me.bid_history) == 0:
+            print 'here'
+            return self.value
         samples = []
         for i in range(n_samples):
             sample = []
             for candidate in self.candidates:
-                time = np.random.choice(len(candidate.bid_history))
-                sample.append(
+                if candidate.id == self.me.id:
+                    continue
+                time = np.random.choice(range(len(candidate.bid_history)))
+                sample.append(\
                     candidate.bid_history[time] *\
                     candidate.quality_score/\
-                    me.quality_score)
-            samples.append(sorted(sample))
+                    self.me.quality_score)
+            samples.append([0] + sorted(sample))
             
         # Try all the choices and select the best one.
         best_bid, best_rev = 0, 0
-        for bid in np.r_[0: self.value_profile[0] + k_step: k_step]:
+        for bid in np.r_[0: self.value + k_step: k_step]:
             rev = 0  # revenue
             for sample in samples:
-                reverse_sample = sample[::-1]
-                k = bisect(reverse_sample, bid)
-                if k >= n_winners:
+                k = bisect.bisect(sample, bid)
+                k = len(sample) - k
+                if k >= self.n_winners:
                     continue
-                rev += self.value_profile[k] - reverse_sample[k]
+                rev += (self.value - sample[k]) * self.ctrs[k]
+            if bid == 0:
+                print rev, k, sample, 0
+            if bid == 7:
+                print rev, k, sample, 7
             if rev > best_rev:
                 best_bid, best_rev = bid, rev
         return best_bid

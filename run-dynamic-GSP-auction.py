@@ -37,7 +37,7 @@ if __name__ == '__main__':
     
     bids = [[],[],[]]
     
-    n_iterations = 500
+    n_iterations = 2
     for iteration in range(n_iterations):
         GSPAuction(candidates, n_winners).GetWinners()
         for candidate in candidates:
@@ -63,4 +63,21 @@ if __name__ == '__main__':
             bids[k].append(candidate['bid'])
             
     plot_trend(n_iterations, bids)
+    
+    bids = [[],[],[]]
+    
+    for iteration in range(n_iterations):
+        GSPAuction(candidates, n_winners).GetWinners()
+        for candidate in candidates:
+            candidate.strategy =\
+                GSP_FictitiousPlayStrategy(candidate, candidates, ctrs)
+            candidate.GetNewBid()
+        
+        for k, candidate in enumerate(candidates):
+            bids[k].append(candidate['bid'])
+    
+    plot_trend(n_iterations, bids, 'FictitiousPlay')
+    
+    for candidate in candidates:
+        print candidate.bid_history
         
