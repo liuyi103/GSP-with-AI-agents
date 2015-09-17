@@ -37,7 +37,7 @@ if __name__ == '__main__':
     
     bids = [[],[],[]]
     
-    n_iterations = 2
+    n_iterations = 20
     for iteration in range(n_iterations):
         GSPAuction(candidates, n_winners).GetWinners()
         for candidate in candidates:

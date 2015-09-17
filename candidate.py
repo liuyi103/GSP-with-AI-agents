@@ -31,7 +31,8 @@ class GSPCandidate(AuctionCandidate):
         self.bid_history = []
     
     def GetNewBid(self):
-        self.bid = self.strategy.GetBid()
+        #  The small residual is for tie-breaking.
+        self.bid = round(self.strategy.GetBid(), 3) + self.id * 1e-6
         self.bid_history.append(self.bid)
 
     def __getitem__(self, key):
