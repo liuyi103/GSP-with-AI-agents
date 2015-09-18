@@ -1,10 +1,8 @@
 __author__ = 'lyc'
 
-from auction import Auction, GSPAuction
-from candidate import GSPCandidate
-from strategy import GSP_BestResponseStrategy
+from auction import Auction, GSPAuction, VideoPodAuction
+from candidate import GSPCandidate, VideoPodCandidate
 import unittest
-import copy
 
 
 class TestAuction(unittest.TestCase):
@@ -33,11 +31,21 @@ class TestAuction(unittest.TestCase):
         self.assertEqual(len(winners), 2)
         self.assertEqual(set([winner['bid'] for winner in winners]), set([5, 4]), msg = "wrong initial bid")
 
-        candidates_copy = copy.deepcopy(candidates)
-        for candidate in candidates:
-            candidate.strategy = GSP_BestResponseStrategy(candidate, candidates_copy, ctrs)
-            candidate.GetNewBid()
-            print candidate.bid
+    def test_VideoPodAuction(self):
+        '''
+        This is a test for video pod auction
+        '''
+        candidate1 = VideoPodCandidate(duration = 10, bid = 5)
+        candidate2 = VideoPodCandidate(duration = 9, bid = 4)
+        candidate3 = VideoPodCandidate(duration = 8, bid = 3)
+        candidates = [candidate1, candidate2, candidate3]
+        n_winners = 10
+        max_duration = 18
+
+        winners = VideoPodAuction(candidates, n_winners, max_duration).GetWinners()
+
+        self.assertEqual(len(winners), 2)
+        self.assertEqual(set([winner['bid'] for winner in winners]), set([5, 3]), msg = "wrong initial bid")
 
 if __name__ == '__main__':
     unittest.main()

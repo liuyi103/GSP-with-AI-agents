@@ -21,6 +21,8 @@ class Winner:
 
 GSPWinner = Winner
 
+VideoPodWinner = Winner
+
 if __name__ == '__main__':
     from candidate import GSPCandidate
     winner = GSPWinner(GSPCandidate())

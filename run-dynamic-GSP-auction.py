@@ -10,6 +10,7 @@ from auction import GSPAuction
 from strategy import *
 import matplotlib.pyplot as plt
 import numpy as np
+import copy
 
 def plot_trend(n_iterations, bids, strategy = 'BestResponse'):
     plt.plot(range(n_iterations), bids[0], label = '1')
@@ -40,9 +41,10 @@ if __name__ == '__main__':
     n_iterations = 20
     for iteration in range(n_iterations):
         GSPAuction(candidates, n_winners).GetWinners()
+        candidates_copy = copy.deepcopy(candidates)
         for candidate in candidates:
             candidate.strategy =\
-                GSP_SmallStepStrategy(candidate, candidates, ctrs)
+                GSP_SmallStepStrategy(candidate, candidates_copy, ctrs)
             candidate.GetNewBid()
         
         for k, candidate in enumerate(candidates):
@@ -54,9 +56,10 @@ if __name__ == '__main__':
     
     for iteration in range(n_iterations):
         GSPAuction(candidates, n_winners).GetWinners()
+        candidates_copy = copy.deepcopy(candidates)
         for candidate in candidates:
             candidate.strategy =\
-                GSP_BestResponseStrategy(candidate, candidates, ctrs)
+                GSP_BestResponseStrategy(candidate, candidates_copy, ctrs)
             candidate.GetNewBid()
         
         for k, candidate in enumerate(candidates):
@@ -68,9 +71,10 @@ if __name__ == '__main__':
     
     for iteration in range(n_iterations):
         GSPAuction(candidates, n_winners).GetWinners()
+        candidates_copy = copy.deepcopy(candidates)
         for candidate in candidates:
             candidate.strategy =\
-                GSP_FictitiousPlayStrategy(candidate, candidates, ctrs)
+                GSP_FictitiousPlayStrategy(candidate, candidates_copy, ctrs)
             candidate.GetNewBid()
         
         for k, candidate in enumerate(candidates):

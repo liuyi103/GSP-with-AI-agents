@@ -17,6 +17,13 @@ class AuctionCandidate:
         self.id = candidate_id
         candidate_id += 1
 
+    def __getitem__(self, key):
+        exec 'value = self.' + key
+        return value
+
+    def __setitem__(self, key, value):
+        exec 'self.%s = %s' % (key, str(value))
+
 class GSPCandidate(AuctionCandidate):
     ''' 
     The candidate for GSP auction, with quality score.
@@ -35,12 +42,15 @@ class GSPCandidate(AuctionCandidate):
         self.bid = round(self.strategy.GetBid(), 3) + self.id * 1e-6
         self.bid_history.append(self.bid)
 
-    def __getitem__(self, key):
-        exec 'value = self.' + key
-        return value
-    
-    def __setitem__(self, key, value):
-        exec 'self.%s = %s' % (key, str(value))
+
+class VideoPodCandidate(AuctionCandidate):
+    '''
+    candidate for video pod auction.
+    '''
+    def __init__(self, bid = random.random(), duration = 15):
+        AuctionCandidate.__init__(self, bid)
+        self.duration = duration
+
 
 if __name__ == '__main__':
     candidate = GSPCandidate()
