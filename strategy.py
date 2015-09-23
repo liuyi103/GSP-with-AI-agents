@@ -24,6 +24,7 @@ class GSPFakeCandidate:
         self.strategy = 0
         
     def __getitem__(self, key):
+        value = "something"
         exec 'value = self.' + key
         return value
 
@@ -159,7 +160,7 @@ def GetBid(me, candidates, ctrs, strategy):
         exec "strategy_map[\'%s\'] = %s" % (i, i)
 
     strategy = strategy_map[strategy]
-    return strategy(me, candidates, ctrs).GetBid()
+    return round(strategy(me, candidates, ctrs).GetBid(), 3) + me.id * 1e-8
         
                 
             

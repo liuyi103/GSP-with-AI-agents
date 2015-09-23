@@ -5,7 +5,7 @@ Created on Mon Sep 07 14:13:54 2015
 @author: lyc
 """
 import random
-from strategy import GSP_TruthfulStrategy, GSP_BestResponseStrategy
+from strategy import GSP_TruthfulStrategy, GSP_BestResponseStrategy, GetBid
 
 candidate_id = 0
 
@@ -18,6 +18,7 @@ class AuctionCandidate:
         candidate_id += 1
 
     def __getitem__(self, key):
+        value = 'something'
         exec 'value = self.' + key
         return value
 
@@ -34,7 +35,7 @@ class GSPCandidate(AuctionCandidate):
         AuctionCandidate.__init__(self, bid)
         self.quality_score = quality_score
         self.value = value
-        self.strategy = GSP_TruthfulStrategy(self)
+        self.strategy = 'GSP_TruthfulStrategy'
         self.bid_history = []
     
     def GetNewBid(self):
