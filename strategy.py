@@ -47,7 +47,10 @@ class GSP_Strategy:
 
 class GSP_TruthfulStrategy(GSP_Strategy):
     ''' report the true top value. '''
-    def __init__(self, me):
+    def __init__(self, me, candidates = [], ctrs = []):
+        '''
+        candidates and ctrs should never be given.
+        '''
         GSP_Strategy.__init__(self, me)
     
     def GetBid(self):
@@ -136,6 +139,27 @@ class GSP_FictitiousPlayStrategy(GSP_Strategy):
             if rev > best_rev:
                 best_bid, best_rev = bid, rev
         return best_bid
+
+def GetBid(me, candidates, ctrs, strategy):
+    '''
+    This function returns the bid of me
+    :param me: the host of this action, a Candidate
+    :param candidates: The list of all the candidates
+    :param ctrs: click through rates of different position
+    :param strategy: A str, "GSP_TruthfulStrategy", "GSP_BestResponseStrategy", "GSP_FictitiousPlayStrategy"
+        or "GSP_SmallStepStrategy"
+    :return:the bid of me
+    '''
+    valid_strategies = ["GSP_TruthfulStrategy", "GSP_BestResponseStrategy", "GSP_FictitiousPlayStrategy"\
+        , "GSP_SmallStepStrategy"]
+    assert (strategy in valid_strategies), "invalid strategy"
+
+    strategy_map = {}
+    for i in valid_strategies:
+        exec "strategy_map[\'%s\'] = %s" % (i, i)
+
+    strategy = strategy_map[strategy]
+    return strategy(me, candidates, ctrs).GetBid()
         
                 
             
