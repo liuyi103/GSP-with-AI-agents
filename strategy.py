@@ -161,8 +161,6 @@ def GetBid(me, candidates, ctrs, strategy):
 
     strategy = strategy_map[strategy]
     return round(strategy(me, candidates, ctrs).GetBid(), 3) + me.id * 1e-8
-        
-                
             
         
                 

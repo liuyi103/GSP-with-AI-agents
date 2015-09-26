@@ -52,6 +52,16 @@ class VideoPodCandidate(AuctionCandidate):
         AuctionCandidate.__init__(self, bid)
         self.duration = duration
 
+class VideoPodGroupCandidate(VideoPodCandidate):
+    '''
+    Used in VideoPodGroupAuction
+    '''
+    def __init__(self, candidates, unitprice):
+        self.unitprice = unitprice
+        self.candidates = candidates
+        bid = sum([candidate['bid'] for candidate in candidates])
+        duration = sum([candidate['duration'] for candidate in candidates])
+        VideoPodCandidate.__init__(self, bid, duration)
 
 if __name__ == '__main__':
     candidate = GSPCandidate()

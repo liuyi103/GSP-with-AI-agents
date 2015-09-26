@@ -6,8 +6,9 @@ Created on Mon Sep 07 14:26:10 2015
 """
 
 from winner import GSPWinner, VideoPodWinner
-from candidate import GSPCandidate
+from candidate import GSPCandidate, VideoPodCandidate, VideoPodGroupCandidate
 import pulp as pp
+import copy
 
 
 class Auction:
@@ -77,7 +78,7 @@ class VideoPodAuction(Auction):
         self.n_winners = min(n_winners, len(candidates))
         self.max_duration = max_duration
 
-    def GetWinners(self):
+    def GetOptimalWinners(self):
         '''
         By default, find the set of candidates that maximize total bids.
         :return:
@@ -92,4 +93,61 @@ class VideoPodAuction(Auction):
         for i in range(len(self.candidates)):
             if pp.value(x[i]) == 1:
                 self.winners.append(VideoPodWinner(self.candidates[i]))
-        return self.winners
+        return self.winners, pp.value(prob.objective)
+
+class VideoPodVCG(VideoPodAuction):
+    '''
+    Run video pod auction with VCG.
+    '''
+    def __init__(self, candidates, n_winners, max_duration):
+        VideoPodAuction.__init__(self, candidates, n_winners, max_duration)
+
+    def GetWinners(self):
+        winners, welfare = VideoPodAuction(self.candidates, self.n_winners, self.max_duration).GetOptimalWinners()
+        for winner in winners:
+            other_welfare = welfare - winner['bid']
+            old_duration = winner['duration']
+            winner.candidate.duration = self.max_duration + 1
+            _, new_welfare = VideoPodAuction(self.candidates, self.n_winners, self.max_duration).GetOptimalWinners()
+            winner.price = new_welfare - other_welfare
+            winner.candidate.duration = old_duration
+        self.winners = winners
+        return self.winners, welfare
+
+class VideoPodGroupAuction(VideoPodAuction):
+    '''
+    1. divide the candidates into groups, with the size of each group given by group_size
+    2. For each group select a subset
+    3. Run knapsack algorithm on the selected groups
+    '''
+    def __init__(self, candidates, n_winners, max_duration, group_size):
+        VideoPodAuction.__init__(self, candidates, n_winners, max_duration)
+        self.group_size = group_size
+
+    @ staticmethod
+    def SelectGroupCandidate(candidates):
+        assert len(candidates) > 0, 'invalid candidates'
+        candidates = copy.deepcopy(candidates)
+        candidates.append(VideoPodCandidate(0, 1e9))
+        candidates.sort(key = lambda x: -x['bid'] / x['duration'])
+        end_nums = range(1, len(candidates))
+        total_duration = lambda end_num: sum([candidate['duration'] for candidate in candidates[:end_num]])
+        end_num = max(end_nums, key = lambda end_num: total_duration(end_num) * candidates[end_num]['bid'])
+        return VideoPodGroupCandidate(candidates[:end_num], candidates[end_num].bid * 1.\
+                                      / candidates[end_num].duration)
+
+    def GetWinners(self):
+        self.candidates.sort(key = lambda candidate: -candidate['duration'])
+        candidates = self.candidates + [VideoPodCandidate(0, 1e9) for i in range(self.group_size)]
+        group_candidates = []
+        for p in range(0, len(self.candidates), self.group_size):
+            group_candidates.append(self.SelectGroupCandidate(candidates[p: p+self.group_size]))
+        winner_groups, welfare = VideoPodAuction(group_candidates, self.n_winners, self.max_duration)\
+            .GetOptimalWinners()
+        winners = []
+        for winner_group  in winner_groups:
+            for win_candidate in winner_group['candidates']:
+                winners.append(VideoPodWinner(win_candidate, win_candidate['duration'] * winner_group['unitprice']))
+        return winners, welfare
+
+
