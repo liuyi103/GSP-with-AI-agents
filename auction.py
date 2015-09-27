@@ -144,6 +144,7 @@ class VideoPodGroupAuction(VideoPodAuction):
             group_candidates.append(self.SelectGroupCandidate(candidates[p: p+self.group_size]))
         winner_groups, welfare = VideoPodAuction(group_candidates, self.n_winners, self.max_duration)\
             .GetOptimalWinners()
+        assert welfare != None, 'Wrong welfare from VideoPodAuction'
         winners = []
         for winner_group  in winner_groups:
             for win_candidate in winner_group['candidates']:
