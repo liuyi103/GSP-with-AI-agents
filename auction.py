@@ -10,7 +10,6 @@ from candidate import GSPCandidate, VideoPodCandidate, VideoPodGroupCandidate
 import pulp as pp
 import copy
 
-
 class Auction:
     ''' 
     This is the base class for auctions.
@@ -85,10 +84,10 @@ class VideoPodAuction(Auction):
         '''
         prob = pp.LpProblem('KNAPSACK', pp.LpMaximize)
         x = pp.LpVariable.dict('x', range(len(self.candidates)), 0, 1.5, pp.LpInteger)
-        prob += sum([x[k] * candidate['bid'] for k, candidate in enumerate(self.candidates)])
-        prob += sum(x) <= self.n_winners
-        prob += sum([x[k] * candidate['duration'] for k, candidate in enumerate(self.candidates)]) \
-                <= self.max_duration
+        prob += (sum(x) <= self.n_winners)
+        prob += (sum([x[k] * candidate['duration'] for k, candidate in enumerate(self.candidates)]) \
+                <= self.max_duration)
+        prob += sum([x[k] * candidate['bid'] for k, candidate in enumerate(self.candidates)] + [0])
         prob.solve()
         for i in range(len(self.candidates)):
             if pp.value(x[i]) == 1:
@@ -104,10 +103,10 @@ class VideoPodVCG(VideoPodAuction):
 
     def GetWinners(self):
         winners, welfare = VideoPodAuction(self.candidates, self.n_winners, self.max_duration).GetOptimalWinners()
-        for winner in winners:
+        for k_winner, winner in enumerate(winners):
             other_welfare = welfare - winner['bid']
             old_duration = winner['duration']
-            winner.candidate.duration = self.max_duration + 1
+            winners[k_winner].candidate.duration = self.max_duration + 1
             _, new_welfare = VideoPodAuction(self.candidates, self.n_winners, self.max_duration).GetOptimalWinners()
             winner.price = new_welfare - other_welfare
             winner.candidate.duration = old_duration

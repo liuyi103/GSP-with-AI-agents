@@ -5,8 +5,8 @@ from auction import VideoPodGroupAuction, VideoPodVCG
 import numpy as np
 
 if __name__ == '__main__':
-    n_iterations = 100
-    n_candidates = 100
+    n_iterations = 20
+    n_candidates = 10
     vcg_revenues = []
     vcg_welfares = []
     group_revenues = []
@@ -21,7 +21,6 @@ if __name__ == '__main__':
         assert vcg_welfare != None, 'None VCG welfare'
         for value in ['vcg_revenue', 'group_revenue', 'vcg_welfare', 'group_welfare']:
             exec '%ss.append(%s)' % (value, value)
-            print '%ss.append(%s)' % (value, value)
-    print np.mean(vcg_welfares), np.mean(group_welfares)
     print np.mean(vcg_revenues), np.mean(group_revenues)
+    print vcg_revenues, group_revenues
 
