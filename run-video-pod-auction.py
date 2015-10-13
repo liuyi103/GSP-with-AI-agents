@@ -17,8 +17,8 @@ if __name__ == '__main__':
         vcg_winners, vcg_welfare = VideoPodVCG(candidates, 5, 240).GetWinners()
         vcg_revenue = sum([winner['price'] for winner in vcg_winners])
         group_revenue = sum([winner['price'] for winner in group_winners])
-        assert group_welfare != None, 'None Group welfare'
-        assert vcg_welfare != None, 'None VCG welfare'
+        assert group_welfare is not None, 'None Group welfare'
+        assert vcg_welfare is not None, 'None VCG welfare'
         for value in ['vcg_revenue', 'group_revenue', 'vcg_welfare', 'group_welfare']:
             exec '%ss.append(%s)' % (value, value)
     print np.mean(vcg_revenues), np.mean(group_revenues)

@@ -52,7 +52,7 @@ if __name__ == '__main__':
             
     plot_trend(n_iterations, bids, 'SmallStep')
     
-    bids = [[],[],[]]
+    bids = [[], [], []]
     
     for iteration in range(n_iterations):
         GSPAuction(candidates, n_winners).GetWinners()
@@ -67,7 +67,7 @@ if __name__ == '__main__':
             
     plot_trend(n_iterations, bids)
     
-    bids = [[],[],[]]
+    bids = [[], [], []]
     
     for iteration in range(n_iterations):
         GSPAuction(candidates, n_winners).GetWinners()
