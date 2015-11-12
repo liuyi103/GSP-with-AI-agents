@@ -113,6 +113,43 @@ class VideoPodVCG(VideoPodAuction):
         self.winners = winners
         return self.winners, welfare
 
+class VideoPodMCVBR(VideoPodAuction):
+    '''
+    Minimize critical value based ratio auction.
+    The critical value is the price in VCG auction.
+    The ratio is defined to be the (price-critical)/(bid - critical)
+    '''
+    def __init__(self, candidates, n_winners, max_duration):
+        VideoPodAuction.__init__(self, candidates, n_winners, max_duration)
+
+    def VerifyCoreOutcome(self, winners):
+        winner_prices = {winner['id']: winner['price'] for winner in winners}
+        revenue = sum([winner['price'] for winner in winners])
+        new_candidates = []
+        for candidate in self.candidates:
+            if candidate['id'] in winner_prices:
+                new_candidates.append(VideoPodCandidate(winner_prices[candidate['id']], candidate['duration']))
+            else:
+                new_candidates.append(candidate)
+        _, welfare = VideoPodAuction(new_candidates, self.n_winners, self.max_duration).GetOptimalWinners()
+        return revenue == welfare
+
+    def GetWinners(self):
+        winners, welfare = VideoPodVCG(self.candidates, self.n_winners, self.max_duration).GetWinners()
+        critical_values = {winner['id']:winner['price'] for winner in winners}
+        st, en = 0., 1.
+        while st + 1e-3 < en:
+            mid = (st+en) / 2
+            for winner in winners:
+                wid = winner['id']
+                winner.price = (winner['bid'] - critical_values[wid]) * mid + critical_values[wid]
+            if self.VerifyCoreOutcome(winners):
+                en = mid
+            else:
+                st = mid
+        return winners, welfare, st
+
+
 class VideoPodGroupAuction(VideoPodAuction):
     '''
     1. divide the candidates into groups, with the size of each group given by group_size
